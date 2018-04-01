@@ -13,14 +13,14 @@ def is_number(s):
         return True
     except ValueError:
         pass
- 
+
 #    try:
 #        import unicodedata
 #        unicodedata.numeric(s)
 #        return True
 #    except (TypeError, ValueError):
 #        pass
- 
+
     return False
 
 def convert_space(lines, boolInter):
@@ -34,7 +34,7 @@ def convert_space(lines, boolInter):
         if len(re_result) and re_result[-1] == '\t':
             re_result = re_result[0:-2]
         new_lines.append(re_result)
-    
+
     while len(new_lines) > 0:
         if len(new_lines[0]) == 0:
             new_lines = new_lines[1:]
@@ -107,7 +107,7 @@ def main():
                 input_file_names.append(filename)
 
     else:
-        input_file_names = input_file_name
+        input_file_names = [input_file_name]
 
     if flag_output_file and output_file_name[-5:-1] == '.xlsx':
         output_file_name = output_file_name
@@ -117,7 +117,7 @@ def main():
         output_file_name = output_file_name + '.xlsx'
     else:
         output_file_name = 'space2xlsx_output.xlsx'
-    
+
     # Read Lines
 
     output_file = xlsxwriter.Workbook(output_file_name)
