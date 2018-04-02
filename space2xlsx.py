@@ -129,7 +129,7 @@ def main():
                 lines = convert_space(input_file.read().splitlines(), flag_interactive)
                 for row in range(len(lines)):
                     for colomn in range(len(lines[row])):
-                        worksheet.write(row, colomn, lines[row][colomn])
+                        worksheet.write(row, colomn, float(lines[row][colomn]))
                 print("FINISH: " + input_file_name)
         except FileNotFoundError:
             print("ERROR: Input File\"" + input_file_name + "\" not found.")
