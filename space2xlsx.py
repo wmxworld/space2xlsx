@@ -65,10 +65,11 @@ def main():
           + "       -a     : Process all files in current folder. \n" \
           + "       -o     : Output File Name or Prefix. \n"\
           + "       -f     : Input File Name if '-a' flag not specified\n"\
-          + "       -inter : Interactive choose first lines to read"
+          + "       -inter : Interactive choose first lines to read\n"\
+          + "       -cbn   : Combine all files to one worksheet"
 
     # Check arguments
-    if not (len(sys.argv) in (2, 3, 4, 5)):
+    if not (len(sys.argv) in (2, 3, 4, 5, 6)):
         print("ERROR: Wrong Number of Arguments Provided")
         print(usage)
         exit(1)
@@ -76,10 +77,14 @@ def main():
     flag_all_file = False
     flag_output_file = False
     flag_interactive = False
+    flag_conbine     = False
 
     # Get arguments
     arg_count = 1
     while arg_count < len(sys.argv):
+        if sys.argv[arg_count] == '-h':
+            print(usage)
+            quit()
         if sys.argv[arg_count] == '-a':
             flag_all_file = True
         elif sys.argv[arg_count] == '-o':
@@ -94,6 +99,8 @@ def main():
             arg_count += 1
         elif sys.argv[arg_count] == '-inter':
             flag_interactive = True
+        elif sys.argv[arg_count] == '-cbn':
+            flag_conbine == True
         arg_count += 1
 
     # build lists for input and output file
@@ -122,19 +129,38 @@ def main():
 
     output_file = xlsxwriter.Workbook(output_file_name)
 
-    for input_file_name in input_file_names:
-        worksheet = output_file.add_worksheet(input_file_name)
-        try:
-            with open(input_file_name, "r") as input_file:
-                lines = convert_space(input_file.read().splitlines(), flag_interactive)
-                for row in range(len(lines)):
-                    for colomn in range(len(lines[row])):
-                        worksheet.write(row, colomn, float(lines[row][colomn]))
-                print("FINISH: " + input_file_name)
-        except FileNotFoundError:
-            print("ERROR: Input File\"" + input_file_name + "\" not found.")
-            print(usage)
-            exit(1)
+    if flag_conbine == True:
+        for input_file_name in input_file_names:
+            worksheet = output_file.add_worksheet(input_file_name)
+            try:
+                with open(input_file_name, "r") as input_file:
+                    lines = convert_space(input_file.read().splitlines(), flag_interactive)
+                    for row in range(len(lines)):
+                        for colomn in range(len(lines[row])):
+                            worksheet.write(row, colomn, float(lines[row][colomn]))
+                    print("FINISH: " + input_file_name)
+            except FileNotFoundError:
+                print("ERROR: Input File\"" + input_file_name + "\" not found.")
+                print(usage)
+                exit(1)
+    else:
+        worksheet = output_file.add_worksheet("Worksheet1")
+        outputColumn = 0
+        for input_file_name in input_file_names:
+            try:
+                with open(input_file_name, "r") as input_file:
+                    lines = convert_space(input_file.read().splitlines(), flag_interactive)
+                    for i in range(len(lines[0])):
+                        worksheet.write(0, outputColumn + i, input_file_name + "_" + str(i))
+                    for row in range(len(lines)):
+                        for colomn in range(len(lines[row])):
+                            worksheet.write(row + 1, colomn + outputColumn, float(lines[row][colomn]))
+                    outputColumn = outputColumn + len(lines[0])
+                    print("FINISH WITH READ: " + input_file_name)
+            except FileNotFoundError:
+                print("ERROR: Input File\"" + input_file_name + "\" not found.")
+                print(usage)
+                exit(1)
 
     output_file.close()
 
