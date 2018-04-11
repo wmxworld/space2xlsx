@@ -114,6 +114,10 @@ def main():
                 input_file_names.append(filename)
 
     else:
+        if not 'input_file_name' in locals().keys():
+            print("You must specify input file unless you have -a flag.\n")
+            print(usage)
+            quit()
         input_file_names = [input_file_name]
 
     if flag_output_file and output_file_name[-5:-1] == '.xlsx':
